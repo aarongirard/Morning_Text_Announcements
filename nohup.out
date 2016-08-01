@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "driver.py", line 5, in <module>
+    from message import build_message
+  File "/home/pi/Desktop/Morning_Text_Announcements/message.py", line 4, in <module>
+    from creds import credentials
+ImportError: No module named creds
+Traceback (most recent call last):
+  File "driver.py", line 5, in <module>
+    from message import build_message
+  File "/home/pi/Desktop/Morning_Text_Announcements/message.py", line 4, in <module>
+    from creds import credentials
+ImportError: No module named creds
+Traceback (most recent call last):
+  File "driver.py", line 41, in <module>
+    main()
+  File "driver.py", line 33, in main
+    print 'sent ' + num + ' at ' +  datetime.datetime.now().hour
+TypeError: cannot concatenate 'str' and 'long' objects

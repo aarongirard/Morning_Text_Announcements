@@ -23,14 +23,14 @@ def initial_msg(number):
 def main():
   while True:
     #run at some time at 6:xx am
-    if datetime.datetime.now().hour == 6:
+    if datetime.datetime.now().hour == 7:
       message = build_message()
       for num in phone_numbers:
         #url, data{}
         post = requests.post('http://textbelt.com/text',
          data = {'number': num, 'message':message}
         )
-        print 'sent ' + num + ' at ' +  datetime.datetime.now().hour
+        print 'sent ' + str(num) + ' at ' +  str(datetime.datetime.now().hour)
     time.sleep(3600) #sleep for 60mins
 
 #response
