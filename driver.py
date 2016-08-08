@@ -3,7 +3,7 @@ import json
 import datetime
 import time
 from twilio.rest import TwilioRestClient
-from message import build_message
+from message import build_weather
 from dad_joke import build_dad_joke
 from creds import credentials
 
@@ -33,7 +33,7 @@ def main():
   while True:
     #run at some time at 6:xx am
     if datetime.datetime.now().hour == 6:
-      message = build_message()
+      message = build_weather()
       message+= '  ' + build_dad_joke()
       for num in PHONE_NUMBERS:
         message = client.messages.create(body=message,to=num,

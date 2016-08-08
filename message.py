@@ -5,13 +5,14 @@ from creds import credentials
 
 #apis
 APPID = credentials['open_weather_key']
-CITY_ID = credentials['city_ID']
 
 #convert Kelvin to F
 def convert_K_F(kelvin):
   return kelvin * 1.8 - 459.67
 
-def get_weather():
+def get_weather(cityID):
+  CITY_ID = cityID
+
   #send request for Atl weather data to get current temp
   weather = requests.get('http://api.openweathermap.org/data/2.5/weather',
     params={'id': CITY_ID, 'APPID': APPID})
@@ -62,11 +63,11 @@ def get_weather():
   return {'cur_tmp': str(int(current_temp)), 'min_tmp': str(int(min_tmp)), 
     'max_tmp': str(int(max_tmp)), 'rain': rain}
 
-def build_message():
+def build_weather(cityID):
   msg = '' 
   
   #get weather data
-  weather = get_weather()
+  weather = get_weather(cityID)
 
   msg += 'The current weather is ' + weather['cur_tmp'] + '. Dress for anything between '\
     + weather['min_tmp'] + '-' + weather['max_tmp'] + '.'
