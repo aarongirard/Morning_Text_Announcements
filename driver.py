@@ -21,9 +21,11 @@ TWILIO_FROM_NUMBER = credentials['twilio_phone_number']
 TWILIO_SID = credentials['twilio_sid']
 TWILIO_AUTH_TOKEN = credentials['auth_token']
 
+#method to send to someone who has joined the service
 def initial_msg(number):
-  client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
   msg = 'You\'ve signed up for morning anouncements!'
+  
+  client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
   message = client.messages.create(body=msg,to=number,
     from_=TWILIO_FROM_NUMBER)
   #post = requests.post('http://textbelt.com/text',
@@ -33,12 +35,17 @@ def main():
   while True:
     #run at some time at 6:xx am
     if datetime.datetime.now().hour == 6:
-      message = build_weather()
-      message+= '  ' + build_dad_joke()
+      todays_dad_joke = build_dad_joke()
       for num in PHONE_NUMBERS:
-        message = client.messages.create(body=message,to=num,
+        msg = build_weather(num[1]) #num[1] is city id
+        msg  += '  ' + todays_dad_joke
+        
+        #send twilio message
+        client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
+        message = client.messages.create(body=msg,to=num[0],
           from_=TWILIO_FROM_NUMBER)
-        #url, data{}
+
+        #url, data{}, message using textbelt.com
         #post = requests.post('http://textbelt.com/text',
          #data = {'number': num, 'message':message})
         print 'sent ' + str(num) + ' at ' +  str(datetime.datetime.now().hour)
