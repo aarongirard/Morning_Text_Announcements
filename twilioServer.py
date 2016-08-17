@@ -9,5 +9,8 @@ app = Flask(__name__)
 def hello_world():
     return 'YOU ARE IN AARONS DOMAIN MOOOAHAHAH'
 
+@app.route('/twilio', methods=['post'])
+def twilio_message_received():
+  print request.form['Body']
 if __name__ == '__main__':
   app.run(host="104.236.230.232", port = 5000)
