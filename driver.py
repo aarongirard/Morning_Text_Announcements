@@ -73,8 +73,9 @@ def main():
       todays_dad_joke = build_dad_joke()
       
       #query database for all records
-      #for num in PHONE_NUMBERS: depreciated
       records = fetch_all_records()
+
+      #send message to each signed up record
       for record in records:
         if record[3] !=3:
           print str(record[0]) +' is not fully signed up' 
