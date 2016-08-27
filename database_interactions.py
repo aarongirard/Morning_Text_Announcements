@@ -82,6 +82,16 @@ class DB:
         'TEXT NOT NULL,signupphase INTEGER NOT NULL)')
       connection.commit() #commit insertion to DB
 
+  #table to hold the possible locations between phase 2 and 3
+  def _create_location_choice_cache_table(self): 
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      #for gps: gps(Time TEXT,Lat TEXT,Long TEXT,Speed TEXT)
+      c.execute('CREATE TABLE LocationChoiceCache(phonenumber INTEGER ' \
+        'PRIMARY KEY, cityid TEXT NOT NULL,cityname ' \
+        'TEXT NOT NULL,signupphase INTEGER NOT NULL)')
+      connection.commit() #commit insertion to DB
+
   ####FUNCTIONS WITH INTERACTING WITH WEAHTER_LOOKUP CACHE TABLE###
 
 

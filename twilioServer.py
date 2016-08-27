@@ -46,28 +46,33 @@ app = Flask(__name__)
 #testings
 @app.route('/')
 def hello_world():
-    print user_signup_phase(3109137479)
-    print 'Aasaddsfasfd'
-    print user_signup_phase(3109137449)
-    return 'HI'
+    return '~~ HELLO MY FRIEND ~~'
 
 """
-messages sent back to twilio phone are posted
+messages from User to twilio phone are posted
 by the twilio server here for the server to decide
-on a Response
+on a Response and then the reverse flow occurs
+
+User (txt)-> twilio server (post)-> This Server
+This Server (response to post) -> twilio server (txt)-> User
+
 
 """
 
 @app.route('/twilio', methods=['post'])
 def twilio_message_received():
+  #variabes to hold releveant post information
   user_text = request.form['Body']
   user_number = request.form['From']
+
+  #initialize DB
+  db = DB()
 
   #clean up the user number - leading'+'
   user_number = ''.join(c for c in user_number if c in digits) 
   
   #get status of user 
-  user_status = user_signup_phase(user_number)
+  user_status = db.user_signup_phase(user_number)
 
   msg= '' #to be sent back to user
   
@@ -85,7 +90,7 @@ def twilio_message_received():
     'anouncements. If not, just respond with \'No\'.'
 
     #create record in DB, set status_phase as 1
-    add_user_record(phonenumber, signupphase = 1)
+    db.add_user_record(phonenumber, signupphase = 1)
 
   """
   (1)
@@ -110,7 +115,7 @@ def twilio_message_received():
       'I\'ll be here waitng'
 
       #delete record from DB
-      delete_user_record(int(user_number))
+      db.delete_user_record(int(user_number))
     else: 
       #find location in open_weather data 
       location = user_text
@@ -126,7 +131,7 @@ def twilio_message_received():
       else:
         #if length one, then use this city; phase = 3
         if len(possible_cities) == 1:
-          update_user_record(int(user_number),possible_cities[0][2],\
+          db.update_user_record(int(user_number),possible_cities[0][2],\
             possible_cities[0][0] + ', ' + possible_cities[0][1], 3)
           
           #respond telling user they have been signed up to x city
