@@ -25,6 +25,7 @@ class DB:
       values = (phonenumber,cityid,cityname,signupphase)
       c.execute('INSERT INTO users(phonenumber,cityid,cityname,signupphase)' \
         'VALUES (?,?,?,?)', values)
+      connection.commit()
 
   #this needs to be tested   
   #phonenumber = int 
@@ -32,12 +33,14 @@ class DB:
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
       c.execute('Delete from users where phonenumber=?', (phonenumber,))
+      connection.commit()
 
   def update_user_record(self, phonenumber, cityid, cityname, signupphase):
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
       c.execute('Update users set cityid=?, cityname=?, signupphase=?' \
         'where phonenumber=?', (cityid, cityname, signupphase, phonenumber))
+      connection.commit()
 
   """
   check whether a user is in DB, if yes, return signup phase #
@@ -47,16 +50,17 @@ class DB:
   2: has been asked to chose between locations
   3: already signed up
   """
-  def user_signup_phase(self, user_phonenumber):
-    results = ''
+  def user_signup_phase(self, phonenumber):
+    results = 0
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
-      c.execute('select * from users where phonenumber = '+str(user_phonenumber)+';')
+      c.execute('select signupphase from users where phonenumber = ' \
+        +str(phonenumber)+';')
       results = c.fetchall()
     
     #if in system, return value, if not return 0
     if results:
-      return results[0][3]
+      return results[0][0]
     else:
       return 0 
 
@@ -76,23 +80,54 @@ class DB:
     #should automatically close connection after execution
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
-      #for gps: gps(Time TEXT,Lat TEXT,Long TEXT,Speed TEXT)
       c.execute('CREATE TABLE users(phonenumber INTEGER PRIMARY KEY, ' \
         'cityid TEXT NOT NULL,cityname ' \
         'TEXT NOT NULL,signupphase INTEGER NOT NULL)')
       connection.commit() #commit insertion to DB
 
+
+  #################################################################
+  #### FUNCTIONS FOR INTERACTING WITH WEAHTER_LOOKUP CACHE TABLE###
+  #################################################################
+  def add_location_cache(self, phonenumber, cityid, cityname, state, ordernum):
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      values = (phonenumber,cityid,cityname,state,ordernum)
+      c.execute('INSERT INTO LocationChoiceCache(phonenumber,cityid,' \
+        'cityname, state, ordernum) VALUES (?,?,?,?,?)', values)
+      connection.commit()
+  
+  #takes the location provided user to retrieve cached value and returns it 
+  #returns (phonenum,cityid,cityname,statename,ordernum)
+  #returns empty list if none found
+  def get_location_caches(self, phonenumber, ordernum):
+    results = 0
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      c.execute('select * from LocationChoiceCache where phonenumber = ' \
+        +str(phonenumber)+' and ordernum = '+str(ordernum)+';')
+      results = c.fetchall()
+    return results
+  
+  def delete_location_caches(self, phonenumber):
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      c.execute('Delete from LocationChoiceCache '\
+        'where phonenumber=?', (phonenumber,))
+      connection.commit()
+
   #table to hold the possible locations between phase 2 and 3
   def _create_location_choice_cache_table(self): 
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
-      #for gps: gps(Time TEXT,Lat TEXT,Long TEXT,Speed TEXT)
-      c.execute('CREATE TABLE LocationChoiceCache(phonenumber INTEGER ' \
-        'PRIMARY KEY, cityid TEXT NOT NULL,cityname ' \
-        'TEXT NOT NULL,signupphase INTEGER NOT NULL)')
+      c.execute('CREATE TABLE LocationChoiceCache(phonenumber INTEGER NOT NULL, ' \
+        'cityid TEXT NOT NULL, cityname TEXT NOT NULL, '\
+        'state TEXT NOT NULL, ordernum INTEGER NOT NULL)') 
       connection.commit() #commit insertion to DB
 
-  ####FUNCTIONS WITH INTERACTING WITH WEAHTER_LOOKUP CACHE TABLE###
+
+
+
 
 
 def main():
