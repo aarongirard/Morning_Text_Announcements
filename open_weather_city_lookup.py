@@ -44,8 +44,24 @@ class Weather_Data:
       print str(e.reason)
       return 0
     return resp.read()
+  
+  #method to parse response from le googs
+  @staticmethod
+  def parse_reverse_geocode_response(response):
+    #parse response for state
+    state_name = ''
+    response = ast.literal_eval(response)['results'][0]["address_components"]  
+
+    #admin lvl 1 = state level
+    for address_components in response:
+      if 'administrative_area_level_1' in address_components['types']:
+        state_name = address_components['long_name']
+        break
+      #if no state found, empty string signifies this
+    return state_name 
 
   #find cities that contain the user provided city name
+  #returns tuple of strings (city name, state, cityid)
   def get_locations_by_city(self, city):
     #find cities that could correspond to user input
     possible_cities = []
@@ -58,21 +74,16 @@ class Weather_Data:
     #geolocate each city to get state
     city_state_tuples = [] 
     
+    #reverse geolocate state from lat/long
     for city_ in possible_cities:  
       content = Weather_Data.get_state_from_latlng(str(city_['coord']['lat']),\
         str(city_['coord']['lon']),GOOGLE_API_KEY)
       
-      #parse content for state
-      state_name = ''
-      content = ast.literal_eval(content)['results'][0]["address_components"]
-      
-      for address_components in content:
-        if 'administrative_area_level_1' in address_components['types']:
-          state_name = address_components['long_name']
-          break
+      #empty if no state found, but should not be encountered
+      state_name = Weather_Data.parse_reverse_geocode_response(content)    
       
       Weather_Data.debug(state_name)
-      city_state_tuples.append((city_['name'],state_name, city_['_id']))
+      city_state_tuples.append((str(city_['name']),state_name, str(city_['_id'])))
     
     Weather_Data.debug(city_state_tuples)
     return city_state_tuples

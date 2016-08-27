@@ -8,6 +8,7 @@ from twilio.rest import TwilioRestClient
 from message import build_weather
 from dad_joke import build_dad_joke
 from creds import credentials
+from database_interactions import DB
 
 """
 Need creds.py file with
@@ -23,37 +24,9 @@ table: users
  phonenumber text, cityid text, cityname text, signupphase integer
 """
 #PHONE_NUMBERS = credentials['phone_numbers'] depreciated
-DBNAME = credentials['dbname']
 TWILIO_FROM_NUMBER = credentials['twilio_phone_number']
 TWILIO_SID = credentials['twilio_sid']
 TWILIO_AUTH_TOKEN = credentials['auth_token']
-
-#creates tables for app. only need to do once or else might overwrite data...
-def create_tables(): 
-  #should automatically close connection after execution
-  with sql.connect(DBNAME) as connection:
-    c = connection.cursor()
-    #for gps: gps(Time TEXT,Lat TEXT,Long TEXT,Speed TEXT)
-    c.execute('CREATE TABLE users(phonenumber INTEGER PRIMARY KEY,\
-      cityid TEXT NOT NULL,cityname \
-      TEXT NOT NULL,signupphase INTEGER NOT NULL)')
-    connection.commit() #commit insertion to DB
-
-#add records without doing twilio process
-def add_existing_records(phonenumber = 000000000, cityid = 'Null', 
-  cityname = 'Null', signupphase = 1):
-  with sql.connect(DBNAME) as connection:
-    c = connection.cursor()
-    values = (phonenumber,cityid,cityname,signupphase)
-    c.execute('INSERT INTO users(phonenumber,cityid,cityname,signupphase) \
-      VALUES (?,?,?,?)', values)
-
-def fetch_all_records():
-  with sql.connect(DBNAME) as connection:
-    c = connection.cursor()
-    c.execute('Select * from users') #need semicolon?
-    records = c.fetchall() #iterable DS of tuples
-    return records #(tuple for each record)
 
 #method to send to someone who has joined the service
 def initial_msg(number):
@@ -73,7 +46,8 @@ def main():
       todays_dad_joke = build_dad_joke()
       
       #query database for all records
-      records = fetch_all_records()
+      db = DB()
+      records = db.fetch_all_user_records()
 
       #send message to each signed up record
       for record in records:
