@@ -68,7 +68,7 @@ class Weather_Data:
     for city_ in self.list_of_city_data:
       print city
       print city_['name']
-      if city.lower() in city_['name'].lower():
+      if city.lower() in city_['name'].decode('utf8').lower():
         possible_cities.append(city_)
     
     Weather_Data.debug(possible_cities)
