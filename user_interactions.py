@@ -3,16 +3,6 @@
 from open_weather_city_lookup import Weather_Data
 from database_interactions import DB
 
-###UTILITY FUNCTIONS###
-
-def check_for_word(text, word):
-  text = text.lower().split()
-  word = word.lower()
-  if word in text:
-    return True
-  else:
-   return False
-
 ###FUNCTIONS FOR RESPONDING TO EACH PHASE###
 #number will always be an int
 #text will always be a string
@@ -152,13 +142,13 @@ Handling canceling here
 """
 def phase3(number, text):
   msg = ''
-  if check_for_word(text, 'cancel'):
+  if 'cancel please' in text:
     db = DB()
     db.delete_user_record(number)
     msg = 'Your subscription has been terminated /cry'
   else: 
     msg = 'Silly, you\'ve already signed up for service. To cancel ' \
-      'message me \'cancel\''
+      'message me \'cancel please\''
   return msg
 
 
