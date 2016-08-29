@@ -37,6 +37,9 @@ PORT = credentials['port']
 TWIML_BoilderPlate = '<?xml version="1.0" encoding="UTF-8" ?>' \
   '<Response><Message> MSG_RPLC </Message></Response>'
 
+def log(thing_to_log):
+  with open('log.txt', 'a+') as f:
+    f.write(str(thing_to_log) + '\n')
 
 #create the application
 app = Flask(__name__)
@@ -87,6 +90,8 @@ def twilio_message_received():
 
   #build text response
   twiml_return = TWIML_BoilderPlate.replace('MSG_RPLC', msg)
+  log('user: ' + user_number + ', text: ' + user_text)
+  log('response: ' + msg)
   return twiml_return
 
 
