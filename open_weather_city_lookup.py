@@ -13,7 +13,7 @@ GOOGLE_API_KEY = 'AIzaSyBYHNQc8rMXxUnQ9ZTVNQPuVQG5MkXjaPQ'
 class Weather_Data:
   #playing around with setting up debug code that can be 
   #easily turned on and off
-  DEBUG = True
+  DEBUG = False
   @staticmethod
   def debug(string):
     if Weather_Data.DEBUG:

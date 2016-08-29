@@ -3,6 +3,20 @@
 from open_weather_city_lookup import Weather_Data
 from database_interactions import DB
 
+###UTILITY FUNCTIONS###
+
+def check_for_word(text, word):
+  text = text.lower().split()
+  word = word.lower()
+  if word in text:
+    return True
+  else:
+   return False
+
+###FUNCTIONS FOR RESPONDING TO EACH PHASE###
+#number will always be an int
+#text will always be a string
+
 """
 (0)
 user not in system:
@@ -13,12 +27,13 @@ user not in system:
   -could implement the city given in text metadata?
 """  
 def phase0(number, text):
+    db = DB()
     msg = 'Hey you, would you like to sign up for Morning anouncemnts? ' \
     'If so please respond with the city for which you would like weather ' \
     'anouncements. If not, just respond with \'No\'.'
 
     #create record in DB, set status_phase as 1
-    db.add_user_record(phonenumber, signupphase = 1)
+    db.add_user_record(number, signupphase = 1)
 
     return msg
 
@@ -36,21 +51,22 @@ and deltete their record from the DB
     loc and set code to 3
 """ 
 def phase1(number, text):
+  db = DB()
   msg = ''
 
   #convert string to array to check for word No
-  text = user_text.lower().split()
+  user_text = text.lower().split()
   
   #user does not want to sign up
-  if 'no' in text:
+  if 'no' in user_text:
     msg = 'I\'m sorry to hear that. If you change your mind ' \
     'I\'ll be here waitng'
 
     #delete record from DB
-    db.delete_user_record(int(user_number))
+    db.delete_user_record(number)
   else: 
     #user wants to sign up, find location in open_weather data 
-    location = user_text
+    location = text
     wd = Weather_Data()
 
     #(city name, state name, ID), all strings
@@ -63,7 +79,7 @@ def phase1(number, text):
     else:
       #if length one, then use this city; phase = 3
       if len(possible_cities) == 1:
-        db.update_user_record(int(user_number),possible_cities[0][2],\
+        db.update_user_record(number,possible_cities[0][2],\
           possible_cities[0][0] + ', ' + possible_cities[0][1], 3)
         
         #respond telling user they have been signed up to x city
@@ -73,11 +89,22 @@ def phase1(number, text):
         #cache possible locations with order
         #repsonse , asking for which number
         #set phase to 2
-        for city in possible_cities:
+
+       
+        msg = 'Please respond with the number corresponding with the correct ' \
+        'location such as \'1\', Here they are: \n'
+        for index,city in enumerate(possible_cities):
+          #varibales for clarity
+          cityname = city[0]
+          statename = city[1]
+          stateID = city[2]
+          ordernum = index+1
           
-          1. city_name, state
-          2. ...
-  
+          db.add_location_cache(number, stateID, cityname, statename, ordernum)
+          
+          msg += str(index+1) + '.' + cityname +', ' + statename + '\n'
+      #set phase =2
+      db.update_user_phase(number,2)
   return msg
 
 """
@@ -86,7 +113,37 @@ def phase1(number, text):
 and set code to 3
 """
 def phase2(number, text):
-  pass
+  db = DB()
+  msg = ''
+
+  #text must be an integer
+  try:
+    loc = int(text)
+  except ValueError:
+    msg = 'please respond with only the number corresponding ' \
+      'to your location'
+    return msg
+  
+  #get cached location
+  user_location = db.get_location_cache(number,loc)
+  print user_location
+  
+  #if loc empty, then not valid input
+  if not user_location:
+    msg = 'please respond with only the number corresponding ' \
+      'to the location'
+    return msg
+  
+  #looks valid, set user location in DB; respond with success
+  #set phase = 3
+  cityid = user_location[0][1]
+  cityname = user_location[0][2]
+  signupphase = 3
+  db.update_user_record(number, cityid, cityname, signupphase)
+  db.delete_location_caches(number)
+  msg = 'You\'ve been signed up for morning anouncements!'
+
+  return msg
 
 """
 (3)
@@ -94,9 +151,15 @@ User already signed up
 Handling canceling here
 """
 def phase3(number, text):
-  msg = 'Silly, you\'ve already signed up for service. To cancel ' \
-    'message me \'cancel\''
-
+  msg = ''
+  if check_for_word(text, 'cancel'):
+    db = DB()
+    db.delete_user_record(number)
+    msg = 'Your subscription has been terminated /cry'
+  else: 
+    msg = 'Silly, you\'ve already signed up for service. To cancel ' \
+      'message me \'cancel\''
   return msg
+
 
 

@@ -9,15 +9,16 @@ import sqlite3 as sql
 from creds import credentials
 
 #name of database to interact with
-#can be hard coded into this file b.c. project uses
-#only one db
+#can be hard coded into this file b.c. project uses only one db
 DBNAME = credentials['dbname']
 
 class DB: 
   def __init__(self):
     self.DBNAME = DBNAME
-
-  ###functions for interacting with user table###
+  
+  #################################################################
+  ######         FUNCTIONS FOR INTERACTING WITH USER TABLE   #####
+  #################################################################
   def add_user_record(self, phonenumber = 0000000000, cityid = 'Null', 
     cityname = 'Null', signupphase = 0):
     with sql.connect(DBNAME) as connection:
@@ -40,6 +41,13 @@ class DB:
       c = connection.cursor()
       c.execute('Update users set cityid=?, cityname=?, signupphase=?' \
         'where phonenumber=?', (cityid, cityname, signupphase, phonenumber))
+      connection.commit()
+
+  def update_user_phase(self,phonenumber,signupphase):
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      c.execute('Update users set signupphase=? where ' \
+        'phonenumber=?', (signupphase, phonenumber))
       connection.commit()
 
   """
@@ -89,18 +97,11 @@ class DB:
   #################################################################
   #### FUNCTIONS FOR INTERACTING WITH WEAHTER_LOOKUP CACHE TABLE###
   #################################################################
-  def add_location_cache(self, phonenumber, cityid, cityname, state, ordernum):
-    with sql.connect(DBNAME) as connection:
-      c = connection.cursor()
-      values = (phonenumber,cityid,cityname,state,ordernum)
-      c.execute('INSERT INTO LocationChoiceCache(phonenumber,cityid,' \
-        'cityname, state, ordernum) VALUES (?,?,?,?,?)', values)
-      connection.commit()
   
   #takes the location provided user to retrieve cached value and returns it 
   #returns (phonenum,cityid,cityname,statename,ordernum)
   #returns empty list if none found
-  def get_location_caches(self, phonenumber, ordernum):
+  def get_location_cache(self, phonenumber, ordernum):
     results = 0
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
@@ -125,21 +126,25 @@ class DB:
         'state TEXT NOT NULL, ordernum INTEGER NOT NULL)') 
       connection.commit() #commit insertion to DB
 
+  #fetches all records in database, returns them
+  def fetch_all_LocationChoiceCache_records(self):
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      c.execute('Select * from LocationChoiceCache') 
+      records = c.fetchall() 
+      return records #(tuple for each record)
 
-
-
-
+  def add_location_cache(self, phonenumber, cityid, cityname, state, ordernum):
+    with sql.connect(DBNAME) as connection:
+      c = connection.cursor()
+      values = (phonenumber,cityid,cityname,state,ordernum)
+      print values
+      c.execute('INSERT INTO LocationChoiceCache(phonenumber,cityid,' \
+        'cityname, state, ordernum) VALUES (?,?,?,?,?)', values)
+      connection.commit()
 
 def main():
   pass
 
 if __name__ == "__main__":
   main()
-
-
-
-
-
-
-
-

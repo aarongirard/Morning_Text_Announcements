@@ -63,6 +63,7 @@ def twilio_message_received():
 
   #clean up the user number - leading'+'
   user_number = ''.join(c for c in user_number if c in digits)
+  user_number = int(user_number)
 
   #initialize DB
   db = DB()
