@@ -1,0 +1,5 @@
+user: 13109137479, text: Hey
+response: Silly, you've already signed up for service. To cancel message me 'cancel please'
+2016-08-29 16:37:05.272389
+user: 13109137479, text: HH
+response: Silly, you've already signed up for service. To cancel message me 'cancel please'

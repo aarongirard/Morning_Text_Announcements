@@ -22,6 +22,7 @@ form ImmutableMultiDict([('FromZip', u'90044'), ('From', u'+13109137479'),
 from string import digits
 from flask import Flask, request, session, g, redirect, url_for, abort, \
 	render_template, flash
+import datetime
 
 #this program's files
 from creds import credentials
@@ -90,7 +91,10 @@ def twilio_message_received():
 
   #build text response
   twiml_return = TWIML_BoilderPlate.replace('MSG_RPLC', msg)
-  log('user: ' + user_number + ', text: ' + user_text)
+
+  #log messages for debugging, etc
+  log(str(datetime.datetime.now()))
+  log('user: ' + str(user_number) + ', text: ' + user_text)
   log('response: ' + msg)
   return twiml_return
 
