@@ -138,7 +138,7 @@ class DB:
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
       values = (phonenumber,cityid,cityname,state,ordernum)
-      print values
+      #print values
       c.execute('INSERT INTO LocationChoiceCache(phonenumber,cityid,' \
         'cityname, state, ordernum) VALUES (?,?,?,?,?)', values)
       connection.commit()

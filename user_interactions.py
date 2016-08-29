@@ -116,7 +116,7 @@ def phase2(number, text):
   
   #get cached location
   user_location = db.get_location_cache(number,loc)
-  print user_location
+  #print user_location
   
   #if loc empty, then not valid input
   if not user_location:

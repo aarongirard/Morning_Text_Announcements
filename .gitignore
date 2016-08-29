@@ -3,4 +3,5 @@ creds*
 nohup.out
 *.pyc
 *.db
+log.txt
 
