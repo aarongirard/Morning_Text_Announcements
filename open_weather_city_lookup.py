@@ -66,6 +66,8 @@ class Weather_Data:
     #find cities that could correspond to user input
     possible_cities = []
     for city_ in self.list_of_city_data:
+      print city
+      print city_['name']
       if city.lower() in city_['name'].lower():
         possible_cities.append(city_)
     
