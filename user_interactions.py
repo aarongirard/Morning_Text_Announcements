@@ -142,7 +142,7 @@ Handling canceling here
 """
 def phase3(number, text):
   msg = ''
-  if 'cancel please' in text:
+  if 'cancel please' in text.lower():
     db = DB()
     db.delete_user_record(number)
     msg = 'Your subscription has been terminated /cry'
