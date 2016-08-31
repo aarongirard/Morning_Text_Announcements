@@ -6,8 +6,10 @@ class to help parse open weather city city ID's for users
 
 import ast
 import urllib2 as url
+from creds import credentials
 
-GOOGLE_API_KEY = 'AIzaSyBYHNQc8rMXxUnQ9ZTVNQPuVQG5MkXjaPQ'
+
+GOOGLE_API_KEY =  credentials['google_api_key']
 
 
 class Weather_Data:

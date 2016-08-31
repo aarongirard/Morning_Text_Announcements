@@ -5,7 +5,7 @@ import time
 import sqlite3 as sql
 
 from twilio.rest import TwilioRestClient
-from message import build_weather
+from get_weather import build_weather
 from dad_joke import build_dad_joke
 from creds import credentials
 from database_interactions import DB
