@@ -54,48 +54,58 @@ def phase1(number, text):
 
     #delete record from DB
     db.delete_user_record(number)
-  else: 
-    #user wants to sign up, find location in open_weather data 
-    location = text
-    wd = Weather_Data()
+    return msg
+  
+  #user wants to sign up, find location in open_weather data 
+  location = text
+  wd = Weather_Data()
 
-    #(city name, state name, ID), all strings
-    possible_cities = wd.get_locations_by_city(location)
+  #(city name, state name, ID), all strings
+  possible_cities = wd.get_locations_by_city(location)
+  
+  #if empty, then location not valid; keep phase at 1
+  if not possible_cities:
+    msg = 'I couldn\'t use that location. make sure to send me ' \
+    'only the city name'
+    return msg
+  
+  #if length one, then use this city; phase = 3
+  if len(possible_cities) == 1:
+    db.update_user_record(number,possible_cities[0][2],\
+      possible_cities[0][0] + ', ' + possible_cities[0][1], 3)
     
-    #if empty, then location not valid; keep phase at 1
-    if not possible_cities:
-      msg = 'I couldn\'t use that location. make sure to send me ' \
-      'only the city name'
-    else:
-      #if length one, then use this city; phase = 3
-      if len(possible_cities) == 1:
-        db.update_user_record(number,possible_cities[0][2],\
-          possible_cities[0][0] + ', ' + possible_cities[0][1], 3)
-        
-        #respond telling user they have been signed up to x city
-        msg = 'You have been signed up for weather alerts for ' \
-          + possible_cities[0][0] + ', ' + possible_cities[0][1]
-      else: 
-        #cache possible locations with order
-        #repsonse , asking for which number
-        #set phase to 2
+    #respond telling user they have been signed up to x city
+    msg = 'You have been signed up for weather alerts for ' \
+      + possible_cities[0][0] + ', ' + possible_cities[0][1]
+    return msg
 
-       
-        msg = 'Please respond with the number corresponding with the correct ' \
-        'location such as \'1\', Here they are: \n'
-        for index,city in enumerate(possible_cities):
-          #varibales for clarity
-          cityname = city[0]
-          statename = city[1]
-          stateID = city[2]
-          ordernum = index+1
-          
-          db.add_location_cache(number, stateID, cityname, statename, ordernum)
-          
-          msg += str(index+1) + '.' + cityname +', ' + statename + '\n'
-      #set phase =2
-      db.update_user_phase(number,2)
+  #catch user error if too many cities are returned
+  #picked arbitrary number, maybe check at some point
+  if len(possible_cities) >= 15:
+    msg = 'Plase make sure your input is just the city name: for example' \
+      'for NYC, the input would be \'New York\''
+    return msg
+
+  #cache possible locations with order;repsonse,asking for which number
+  #set phase to 2
+  msg = 'Please respond with the number corresponding with the correct ' \
+  'location such as \'1\', Here they are: \n'
+  for index,city in enumerate(possible_cities):
+    #varibales for clarity
+    cityname = city[0]
+    statename = city[1]
+    stateID = city[2]
+    ordernum = index+1
+    
+    db.add_location_cache(number, stateID, cityname, statename, ordernum)
+    
+    msg += str(index+1) + '.' + cityname +', ' + statename + '\n'
+  
+  db.update_user_phase(number,2)
   return msg
+  
+  
+  
 
 """
 (2)
@@ -131,7 +141,8 @@ def phase2(number, text):
   signupphase = 3
   db.update_user_record(number, cityid, cityname, signupphase)
   db.delete_location_caches(number)
-  msg = 'You\'ve been signed up for morning anouncements!'
+  msg = 'You\'ve been signed up for morning anouncements! If you want cancel' \
+    'message me \'cancel please\''
 
   return msg
 
