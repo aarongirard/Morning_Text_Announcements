@@ -4,4 +4,4 @@ nohup.out
 *.pyc
 *.db
 log.txt
-
+dad_joke_history.txt

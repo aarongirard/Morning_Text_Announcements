@@ -26,7 +26,6 @@ import datetime
 
 #this program's files
 from creds import credentials
-from open_weather_city_lookup import Weather_Data
 from database_interactions import DB
 from user_interactions import phase0,phase1,phase2,phase3
 
