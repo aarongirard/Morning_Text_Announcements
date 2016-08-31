@@ -1,4 +1,4 @@
-from user_interactions import phase0,phase1,phase2,phase3
+from ..user_interactions import phase0,phase1,phase2,phase3
 
 """
 I think its going to be better to test user 'routes' instead of phase 
