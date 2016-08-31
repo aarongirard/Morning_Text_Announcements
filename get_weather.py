@@ -10,7 +10,7 @@ APPID = credentials['open_weather_key']
 def convert_K_F(kelvin):
   return kelvin * 1.8 - 459.67
 
-def get_weather(cityID):
+def get_weather_from_api(cityID):
   CITY_ID = cityID
 
   #send request for Atl weather data to get current temp
@@ -67,7 +67,7 @@ def build_weather(cityID):
   msg = '' 
   
   #get weather data
-  weather = get_weather(cityID)
+  weather = get_weather_from_api(cityID)
 
   msg += 'The current weather is ' + weather['cur_tmp'] + '. Dress for anything between '\
     + weather['min_tmp'] + '-' + weather['max_tmp'] + '.'
