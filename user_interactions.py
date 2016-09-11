@@ -1,6 +1,4 @@
 #ROUTES for USER interaction base on SIGNUP PHASE
-
-from open_weather_city_lookup import Weather_Data
 from database_interactions import DB
 
 ###FUNCTIONS FOR RESPONDING TO EACH PHASE###
