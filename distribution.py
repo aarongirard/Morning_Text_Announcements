@@ -28,6 +28,10 @@ TWILIO_FROM_NUMBER = credentials['twilio_phone_number']
 TWILIO_SID = credentials['twilio_sid']
 TWILIO_AUTH_TOKEN = credentials['auth_token']
 
+def log(thing_to_log):
+  with open('log.txt', 'a+') as f:
+    f.write(str(thing_to_log) + '\n')
+
 #method to send to someone who has joined the service
 def initial_msg(number):
   msg = 'You\'ve signed up for morning anouncements!'
@@ -52,7 +56,7 @@ def adhoc_msg(msg):
 def main():
   while True:
     #run at some time at 6:xx am
-    if datetime.datetime.now().hour == datetime.datetime.now().hour:
+    if datetime.datetime.now().hour == 6:
       #get todays dad joke of the day
       todays_dad_joke = build_dad_joke()
       
@@ -65,7 +69,7 @@ def main():
       apisent = 0
       for record in records:
         if record[2] !=3:
-          print str(record[0]) +' is not fully signed up' 
+          log(str(record[0]) +' is not fully signed up')
           continue
         msg = build_weather(record[1]) #zipcode
         msg  += '  ' + todays_dad_joke
@@ -79,7 +83,8 @@ def main():
         if apisent%10 == 0:
           time.sleep(60)
 
-        print 'sent ' + str(record[0]) + ' at ' +  str(datetime.datetime.now().hour)
+        log('sent ' + str(record[0]) + ' at ' +  
+          str(datetime.datetime.now().hour))
     time.sleep(3600) #sleep for 60mins
 
 if __name__ == "__main__":

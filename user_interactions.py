@@ -16,8 +16,8 @@ user not in system:
 """  
 def phase0(number, text):
     db = DB()
-    msg = 'Hey you, would you like to sign up for Morning anouncemnts? ' \
-    'If so please respond with the zipcode for where you would like weather ' \
+    msg = 'Hey you, would you like to sign up for Morning announcements? ' \
+    'If so, please respond with the zipcode for where you would like weather ' \
     'anouncements. If not, just respond with \'No\'.'
 
     #create record in DB, set status_phase as 1
@@ -44,7 +44,7 @@ def phase1(number, text):
   #user does not want to sign up
   if 'no' in user_text:
     msg = 'I\'m sorry to hear that. If you change your mind ' \
-    'I\'ll be here waitng'
+    'I\'ll be here waiting'
 
     #delete record from DB
     db.delete_user_record(number)

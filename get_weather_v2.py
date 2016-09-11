@@ -21,7 +21,7 @@ def get_weather_from_api(zipcode):
   weather_data = json.loads(weather.text)
   forecasts = weather_data['hourly_forecast']
   today = datetime.datetime.now().day
-  today = 11
+
   hourly_weather = {} #holds dictionary {24hrtime: temp in F}
   for forecast in forecasts:
     #if forcast is for today
@@ -38,7 +38,6 @@ def build_weather(zipcode):
 
   #get weather data
   weather = get_weather_from_api(zipcode)
-  print weather
 
   AVGTEMP_ = 0
   HIGHTEMP_ = 0 
