@@ -19,13 +19,14 @@ class DB:
   #################################################################
   ######         FUNCTIONS FOR INTERACTING WITH USER TABLE   #####
   #################################################################
-  def add_user_record(self, phonenumber = 0000000000, cityid = 'Null', 
-    cityname = 'Null', signupphase = 0):
+  #schema = (phonenumber| zipcode | signupphase)
+  def add_user_record(self, phonenumber = 0000000000, zipcode = 'Null',
+   signupphase = 0):
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
-      values = (phonenumber,cityid,cityname,signupphase)
-      c.execute('INSERT INTO users(phonenumber,cityid,cityname,signupphase)' \
-        'VALUES (?,?,?,?)', values)
+      values = (phonenumber,zipcode,signupphase)
+      c.execute('INSERT INTO users(phonenumber,zipcode,signupphase)' \
+        'VALUES (?,?,?)', values)
       connection.commit()
 
   #this needs to be tested   
@@ -36,11 +37,11 @@ class DB:
       c.execute('Delete from users where phonenumber=?', (phonenumber,))
       connection.commit()
 
-  def update_user_record(self, phonenumber, cityid, cityname, signupphase):
+  def update_user_record(self, phonenumber, zipcode, signupphase):
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
-      c.execute('Update users set cityid=?, cityname=?, signupphase=?' \
-        'where phonenumber=?', (cityid, cityname, signupphase, phonenumber))
+      c.execute('Update users set zipcode=?, signupphase=?' \
+        'where phonenumber=?', (zipcode, signupphase, phonenumber))
       connection.commit()
 
   def update_user_phase(self,phonenumber,signupphase):
@@ -80,8 +81,6 @@ class DB:
       records = c.fetchall() #iterable DS of tuples
       return records #(tuple for each record)
 
-  ####FUNCTIONS WITH INTERACTING WITH WEAHTER_LOOKUP CACHE TABLE###
-
   #creates tables for app. only need to do once or else might overwrite data...
   #module private
   def _create_user_table(self): 
@@ -89,8 +88,7 @@ class DB:
     with sql.connect(DBNAME) as connection:
       c = connection.cursor()
       c.execute('CREATE TABLE users(phonenumber INTEGER PRIMARY KEY, ' \
-        'cityid TEXT NOT NULL,cityname ' \
-        'TEXT NOT NULL,signupphase INTEGER NOT NULL)')
+        'zipcode INTEGER,signupphase INTEGER NOT NULL)')
       connection.commit() #commit insertion to DB
 
 

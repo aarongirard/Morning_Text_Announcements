@@ -1,3 +1,4 @@
+
 import random
 import re
 
@@ -11,7 +12,7 @@ def build_dad_joke():
   except IOError:
     pass #prob first time running program, no history yet
 
-  print 'history: ', dad_joke_history
+  #print 'history: ', dad_joke_history
 
   jokes_list = []
   with open('dad_jokes.txt','r') as jokes:
@@ -24,14 +25,14 @@ def build_dad_joke():
   
   #resample if already used
   while choice in dad_joke_history:
-    print'need to resample: ', choice
+    #print'need to resample: ', choice
     choice = random.randint(0,len(jokes_list)-1)
 
   print 'choice: ', choice
   #add choice to dad joke history
   with open('dad_joke_history.txt', 'a+') as f:
     f.write(str(choice) + '\n')
-    print 'wrote choice to history'
+    #print 'wrote choice to history'
   joke = jokes_list[choice]
   
   #need to clean out non alphanumeric cause lazy

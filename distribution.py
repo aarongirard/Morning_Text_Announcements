@@ -5,7 +5,7 @@ import time
 import sqlite3 as sql
 
 from twilio.rest import TwilioRestClient
-from get_weather import build_weather
+from get_weather_v2 import build_weather
 from dad_joke import build_dad_joke
 from creds import credentials
 from database_interactions import DB
@@ -35,13 +35,24 @@ def initial_msg(number):
   client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
   message = client.messages.create(body=msg,to=number,
     from_=TWILIO_FROM_NUMBER)
-  #post = requests.post('http://textbelt.com/text',
-    #data = {'number': number, 'message': msg})
+
+def adhoc_msg(msg):
+  #query database for all records
+  db = DB()
+  records = db.fetch_all_user_records()
+
+  for record in records:
+    if record[2] !=3:
+      continue
+    #send twilio messages
+    client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
+    message = client.messages.create(body=msg,to=record[0],
+      from_=TWILIO_FROM_NUMBER)
 
 def main():
   while True:
     #run at some time at 6:xx am
-    if datetime.datetime.now().hour == 6:
+    if datetime.datetime.now().hour == datetime.datetime.now().hour:
       #get todays dad joke of the day
       todays_dad_joke = build_dad_joke()
       
@@ -50,28 +61,27 @@ def main():
       records = db.fetch_all_user_records()
 
       #send message to each signed up record
+      #wait 1 minute every 10 records b.c of api limit =(
+      apisent = 0
       for record in records:
-        if record[3] !=3:
+        if record[2] !=3:
           print str(record[0]) +' is not fully signed up' 
           continue
-        msg = build_weather(record[1]) #num[1] is city id
+        msg = build_weather(record[1]) #zipcode
         msg  += '  ' + todays_dad_joke
         
         #send twilio messages
         client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
         message = client.messages.create(body=msg,to=record[0],
           from_=TWILIO_FROM_NUMBER)
+        
+        apisent+=1
+        if apisent%10 == 0:
+          time.sleep(60)
 
-        #url, data{}, message using textbelt.com
-        #post = requests.post('http://textbelt.com/text',
-        #data = {'number': num, 'message':message})
         print 'sent ' + str(record[0]) + ' at ' +  str(datetime.datetime.now().hour)
     time.sleep(3600) #sleep for 60mins
 
-#response
-#print post.text
-
-#run this if run from commnand line, and not import
 if __name__ == "__main__":
   main()
-  #don't run anythin on import
+
