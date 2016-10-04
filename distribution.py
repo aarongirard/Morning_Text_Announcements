@@ -54,9 +54,11 @@ def adhoc_msg(msg):
       from_=TWILIO_FROM_NUMBER)
 
 def main():
+  #don't send more than once in a day
+  last_day_sent = -1
   while True:
     #run at some time at 6:xx am
-    if datetime.datetime.now().hour == 6:
+    if datetime.datetime.now().hour == 6 && last_day_sent != datetime.datetime.now().day:
       #get todays dad joke of the day
       todays_dad_joke = build_dad_joke()
       
@@ -65,8 +67,6 @@ def main():
       records = db.fetch_all_user_records()
 
       #send message to each signed up record
-      #wait 1 minute every 10 records b.c of api limit =(
-      apisent = 0
       for record in records:
         if record[2] !=3:
           log(str(record[0]) +' is not fully signed up')
@@ -78,14 +78,12 @@ def main():
         client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
         message = client.messages.create(body=msg,to=record[0],
           from_=TWILIO_FROM_NUMBER)
-        
-        apisent+=1
-        if apisent%10 == 0:
-          time.sleep(60)
 
         log('sent ' + str(record[0]) + ' at ' +  
           str(datetime.datetime.now().hour))
-    time.sleep(3600) #sleep for 60mins
+      #set today as last day sent
+      last_day_sent = datetime.datetime.now().day
+    time.sleep(1800) #sleep for 30mins
 
 if __name__ == "__main__":
   main()
