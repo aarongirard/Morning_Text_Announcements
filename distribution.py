@@ -58,7 +58,7 @@ def main():
   last_day_sent = -1
   while True:
     #run at some time at 6:xx am
-    if datetime.datetime.now().hour == 6 && last_day_sent != datetime.datetime.now().day:
+    if datetime.datetime.now().hour == 6 and last_day_sent != datetime.datetime.now().day:
       #get todays dad joke of the day
       todays_dad_joke = build_dad_joke()
       
