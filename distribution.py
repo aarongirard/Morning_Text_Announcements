@@ -57,11 +57,12 @@ def main():
   #don't send more than once in a day
   last_day_sent = -1
   while True:
+    sent_counter = 0
     #run at some time at 6:xx am
     if datetime.datetime.now().hour == 6 and last_day_sent != datetime.datetime.now().day:
       #get todays dad joke of the day
       todays_dad_joke = build_dad_joke()
-      
+
       #query database for all records
       db = DB()
       records = db.fetch_all_user_records()
@@ -73,13 +74,16 @@ def main():
           continue
         msg = build_weather(record[1]) #zipcode
         msg  += '  ' + todays_dad_joke
-        
+        sent_counter+=1
+        if sent_counter == 9:
+          time.sleep(65)
+          sent_counter = 0
         #send twilio messages
         client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
         message = client.messages.create(body=msg,to=record[0],
           from_=TWILIO_FROM_NUMBER)
 
-        log('sent ' + str(record[0]) + ' at ' +  
+        log('sent ' + str(record[0]) + ' at ' +
           str(datetime.datetime.now().hour))
       #set today as last day sent
       last_day_sent = datetime.datetime.now().day
