@@ -30,12 +30,12 @@ TWILIO_AUTH_TOKEN = credentials['auth_token']
 
 def log(thing_to_log):
   with open('log.txt', 'a+') as f:
-    f.write(str(thing_to_log) + '\n')
+    f.write(str(datetime.datetime.now())+',  ' + str(thing_to_log) + '\n')
 
 #method to send to someone who has joined the service
 def initial_msg(number):
   msg = 'You\'ve signed up for morning anouncements!'
-  
+
   client = TwilioRestClient(TWILIO_SID, TWILIO_AUTH_TOKEN)
   message = client.messages.create(body=msg,to=number,
     from_=TWILIO_FROM_NUMBER)
