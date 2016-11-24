@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 from creds import credentials
+from utils.py import log
 
 #apis
 APPID = credentials['wunderground_api']#credentials['open_weather_key']
@@ -19,7 +20,14 @@ def get_weather_from_api(zipcode):
 
   #convert reponse to json object
   weather_data = json.loads(weather.text)
-  forecasts = weather_data['hourly_forecast']
+
+  #if key error, return failure
+  try:
+    forecasts = weather_data['hourly_forecast']
+  except KeyError:
+    log('KeyError in hourly_forcast json')
+    return -1
+
   today = datetime.datetime.now().day
 
   hourly_weather = {} #holds dictionary {24hrtime: temp in F}
@@ -38,6 +46,12 @@ def build_weather(zipcode):
 
   #get weather data
   weather = get_weather_from_api(zipcode)
+
+  #if failed, try once more, if that fails skip for today and tell user
+  if weather == -1:
+    weather = get_weather_from_api(zipcode)
+  if weather == -1:
+    return 'Sorry, boo I couldn\'t read the weather today'
 
   AVGTEMP_ = 0
   HIGHTEMP_ = 0 
